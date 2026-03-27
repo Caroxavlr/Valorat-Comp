@@ -15,26 +15,34 @@
   body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(-55deg,transparent,transparent 60px,rgba(255,70,85,0.02) 60px,rgba(255,70,85,0.02) 61px);pointer-events:none;z-index:0;}
   .wrapper{position:relative;z-index:1;max-width:1160px;margin:0 auto;}
 
-  /* Header */
   .header{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
   .header-bar{width:5px;height:52px;background:var(--red);box-shadow:0 0 16px var(--red);flex-shrink:0;}
   .header-title{font-family:'Rajdhani',sans-serif;font-size:34px;font-weight:700;letter-spacing:4px;text-transform:uppercase;}
   .header-title span{color:var(--red);}
   .header-sub{font-size:12px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:3px;}
 
-  /* Toolbar */
+  /* Save indicator */
+  .save-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:var(--muted);letter-spacing:1px;}
+  .save-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:background 0.3s;}
+  .save-dot.saved{background:#2ecc71;}
+  .save-dot.unsaved{background:#FFC107;}
+
   .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
-  .hint{font-size:12px;color:var(--muted);letter-spacing:1px;flex:1;min-width:200px;}
+  .hint{font-size:12px;color:var(--muted);letter-spacing:1px;flex:1;min-width:180px;}
   .hint span{color:var(--red);}
   .btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;border:none;font-weight:600;}
+  .btn-save{background:#2ecc71;color:#0a1f14;}
+  .btn-save:hover{background:#27b863;}
   .btn-share{background:var(--red);color:#fff;}
   .btn-share:hover{background:#e03344;}
   .btn-reset{background:transparent;border:1px solid var(--border);color:var(--muted);}
   .btn-reset:hover{border-color:var(--red);color:var(--red);}
 
-  /* Share toast */
-  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a3a2a;border:1px solid #2ecc71;color:#2ecc71;padding:12px 24px;border-radius:6px;font-size:13px;letter-spacing:2px;text-transform:uppercase;z-index:999;transition:transform 0.3s ease;pointer-events:none;}
+  /* Toasts */
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);padding:12px 24px;border-radius:6px;font-size:13px;letter-spacing:2px;text-transform:uppercase;z-index:999;transition:transform 0.3s ease;pointer-events:none;font-family:'Barlow Condensed',sans-serif;}
   .toast.show{transform:translateX(-50%) translateY(0);}
+  .toast-green{background:#1a3a2a;border:1px solid #2ecc71;color:#2ecc71;}
+  .toast-blue{background:#0d2233;border:1px solid #29B6F6;color:#29B6F6;}
 
   /* Table */
   .comp-table{width:100%;border-collapse:separate;border-spacing:0 5px;}
@@ -99,8 +107,17 @@
   .name-modal-box{background:#0e1d28;border:1px solid var(--border);border-radius:8px;padding:28px;width:360px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.9);}
   .name-input{width:100%;margin:14px 0 18px;padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:18px;letter-spacing:2px;text-transform:uppercase;border-radius:4px;outline:none;}
   .name-input:focus{border-color:var(--red);}
-  .btn-save{width:100%;padding:10px;background:var(--red);border:none;color:#fff;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:opacity 0.2s;}
-  .btn-save:hover{opacity:0.85;}
+  .btn-save-name{width:100%;padding:10px;background:var(--red);border:none;color:#fff;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:opacity 0.2s;}
+  .btn-save-name:hover{opacity:0.85;}
+
+  /* Share modal */
+  .share-modal-box{background:#0e1d28;border:1px solid var(--border);border-radius:8px;padding:28px;width:520px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.9);}
+  .share-url-wrap{display:flex;gap:8px;margin:16px 0;}
+  .share-url{flex:1;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;border-radius:4px;outline:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .btn-copy{padding:10px 18px;background:var(--red);border:none;color:#fff;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:4px;white-space:nowrap;transition:opacity 0.2s;}
+  .btn-copy:hover{opacity:0.85;}
+  .share-note{font-size:12px;color:var(--muted);letter-spacing:1px;line-height:1.6;}
+  .share-note span{color:#2ecc71;}
 
   .legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);}
   .legend-item{display:flex;align-items:center;gap:8px;font-size:13px;letter-spacing:1px;text-transform:uppercase;}
@@ -125,11 +142,20 @@
     </div>
   </div>
 
+  <div class="save-bar">
+    <div class="save-dot" id="saveDot"></div>
+    <span id="saveLabel">A carregar...</span>
+  </div>
+
   <div class="toolbar">
     <div class="hint">Clica num <span>agente</span> para escolher · Clica no <span>nome</span> do jogador para editar</div>
-    <button class="btn btn-share" onclick="shareComp()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-      Partilhar Link
+    <button class="btn btn-save" onclick="saveComp()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Guardar
+    </button>
+    <button class="btn btn-share" onclick="openShareModal()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Partilhar
     </button>
     <button class="btn btn-reset" onclick="confirmReset()">↺ Reset</button>
   </div>
@@ -138,7 +164,9 @@
   <div class="legend" id="legend"></div>
 </div>
 
-<div class="toast" id="toast">✓ Link copiado para a área de transferência</div>
+<!-- Toasts -->
+<div class="toast toast-green" id="toastSaved">✓ Composição guardada!</div>
+<div class="toast toast-blue" id="toastCopied">✓ Link copiado!</div>
 
 <!-- Agent picker -->
 <div class="modal-overlay" id="agentModal">
@@ -162,16 +190,33 @@
     </div>
     <input class="name-input" type="text" id="nameInput" maxlength="20" placeholder="Nome do jogador"
       onkeydown="if(event.key==='Enter') saveName()">
-    <button class="btn-save" onclick="saveName()">Guardar</button>
+    <button class="btn-save-name" onclick="saveName()">Guardar</button>
+  </div>
+</div>
+
+<!-- Share modal -->
+<div class="modal-overlay" id="shareModal">
+  <div class="share-modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Partilhar Composição</div>
+      <span class="modal-close" onclick="closeShareModal()">✕</span>
+    </div>
+    <p class="share-note">Este link contém toda a tua composição. Qualquer pessoa que o abra verá <span>exatamente a mesma comp</span>.</p>
+    <div class="share-url-wrap">
+      <input class="share-url" type="text" id="shareUrlInput" readonly onclick="this.select()">
+      <button class="btn-copy" onclick="copyShareUrl()">Copiar</button>
+    </div>
+    <p class="share-note">💡 Guarda primeiro com <span>Guardar</span> para partilhar a versão mais recente.</p>
   </div>
 </div>
 
 <script>
 // ── Constants ──────────────────────────────────────────────────────
-const PLAYER_COLORS = ['#ccc','#4CAF50','#FFC107','#FF4655','#29B6F6'];
-const ALL_MAPS = ['Abyss','Ascent','Bind','Breeze','Corrode','Fracture','Haven','Icebox','Lotus','Pearl','Split','Sunset'];
+const PLAYER_COLORS  = ['#ccc','#4CAF50','#FFC107','#FF4655','#29B6F6'];
+const ALL_MAPS       = ['Abyss','Ascent','Bind','Breeze','Corrode','Fracture','Haven','Icebox','Lotus','Pearl','Split','Sunset'];
+const STORAGE_KEY    = 'valorat_comp_v1';
+const SITE_BASE      = 'https://caroxavlr.github.io/Valorat-Comp/';
 
-// Default comp from screenshot
 const DEFAULT_AGENTS = {
   Bind:     ['Skye',  'Raze',  'Brimstone', 'Waylay',  'Viper'],
   Breeze:   ['Skye',  'Neon',  'Chamber',   'Waylay',  'Viper'],
@@ -183,11 +228,12 @@ const DEFAULT_AGENTS = {
   Pearl:    ['Fade',  'Neon',  'Omen',      'Phoenix', 'Killjoy'],
   Split:    ['Skye',  'Neon',  'Omen',      'Waylay',  'Viper'],
 };
-const DEFAULT_PLAYERS = ['???', 'Mendxzin', 'Tomazio99', 'Weben', 'Whiskas'];
+const DEFAULT_PLAYERS = ['???','Mendxzin','Tomazio99','Weben','Whiskas'];
 
 // ── State ──────────────────────────────────────────────────────────
-let players = [...DEFAULT_PLAYERS];
-let state   = {};
+let players   = [...DEFAULT_PLAYERS];
+let state     = {};
+let unsaved   = false;
 ALL_MAPS.forEach(m => { state[m] = DEFAULT_AGENTS[m] ? [...DEFAULT_AGENTS[m]] : ['','','','','']; });
 
 let agentData   = {};
@@ -196,39 +242,94 @@ let allAgents   = [];
 let agentTarget = null;
 let nameTarget  = null;
 
-// ── URL encode/decode ──────────────────────────────────────────────
-function encodeState() {
-  const obj = { p: players, s: state };
-  return btoa(encodeURIComponent(JSON.stringify(obj)));
+// ── Persistence ────────────────────────────────────────────────────
+function saveComp() {
+  const data = { players, state };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  unsaved = false;
+  updateSaveBar();
+  showToast('toastSaved');
 }
 
-function decodeState(str) {
-  try {
-    const obj = JSON.parse(decodeURIComponent(atob(str)));
-    if (obj.p && obj.s) {
-      players = obj.p;
-      ALL_MAPS.forEach(m => { state[m] = obj.s[m] || ['','','','','']; });
-    }
-  } catch(e) { /* invalid, use defaults */ }
-}
-
-function loadFromURL() {
+function loadSaved() {
+  // Priority: URL param > localStorage > defaults
   const params = new URLSearchParams(window.location.search);
-  const data   = params.get('comp');
-  if (data) decodeState(data);
+  const urlData = params.get('comp');
+  if (urlData) {
+    try {
+      const obj = JSON.parse(decodeURIComponent(atob(urlData)));
+      if (obj.players && obj.state) {
+        players = obj.players;
+        ALL_MAPS.forEach(m => { state[m] = obj.state[m] || ['','','','','']; });
+        unsaved = false;
+        updateSaveBar();
+        return;
+      }
+    } catch(e) {}
+  }
+  // Try localStorage
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const obj = JSON.parse(raw);
+      if (obj.players && obj.state) {
+        players = obj.players;
+        ALL_MAPS.forEach(m => { state[m] = obj.state[m] || ['','','','','']; });
+      }
+    }
+  } catch(e) {}
+  unsaved = false;
+  updateSaveBar();
 }
 
-function shareComp() {
-  const encoded = encodeState();
-  const url = window.location.origin + window.location.pathname + '?comp=' + encoded;
-  navigator.clipboard.writeText(url).then(() => showToast()).catch(() => {
-    // fallback: prompt
-    prompt('Copia este link:', url);
-  });
+function markUnsaved() {
+  unsaved = true;
+  updateSaveBar();
 }
 
-function showToast() {
-  const t = document.getElementById('toast');
+function updateSaveBar() {
+  const dot   = document.getElementById('saveDot');
+  const label = document.getElementById('saveLabel');
+  if (!dot) return;
+  if (unsaved) {
+    dot.className   = 'save-dot unsaved';
+    label.textContent = 'Alterações por guardar';
+  } else {
+    dot.className   = 'save-dot saved';
+    label.textContent = 'Guardado localmente';
+  }
+}
+
+// ── Share ──────────────────────────────────────────────────────────
+function buildShareUrl() {
+  const obj     = { players, state };
+  const encoded = btoa(encodeURIComponent(JSON.stringify(obj)));
+  return SITE_BASE + '?comp=' + encoded;
+}
+
+function openShareModal() {
+  document.getElementById('shareUrlInput').value = buildShareUrl();
+  document.getElementById('shareModal').classList.add('open');
+}
+
+function closeShareModal() {
+  document.getElementById('shareModal').classList.remove('open');
+}
+
+function copyShareUrl() {
+  const url = document.getElementById('shareUrlInput').value;
+  navigator.clipboard.writeText(url)
+    .then(() => { closeShareModal(); showToast('toastCopied'); })
+    .catch(() => {
+      document.getElementById('shareUrlInput').select();
+      document.execCommand('copy');
+      closeShareModal();
+      showToast('toastCopied');
+    });
+}
+
+function showToast(id) {
+  const t = document.getElementById(id);
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
 }
@@ -240,12 +341,10 @@ async function fetchAll() {
     fetch('https://valorant-api.com/v1/maps')
   ]);
   const [aj, mj] = await Promise.all([ar.json(), mr.json()]);
-
   allAgents = aj.data
     .filter(a => a.isPlayableCharacter)
     .sort((a,b) => a.displayName.localeCompare(b.displayName))
     .map(a => ({ name: a.displayName, portrait: a.bustPortrait || a.displayIconSmall, icon: a.displayIconSmall }));
-
   for (const a of allAgents) agentData[a.name.toLowerCase()] = { portrait: a.portrait, icon: a.icon };
   for (const m of mj.data) if (m.splash) mapData[m.displayName.toLowerCase()] = m.splash;
 }
@@ -259,12 +358,10 @@ function agentImg(name) {
 // ── Render ─────────────────────────────────────────────────────────
 function renderTable() {
   const app = document.getElementById('app');
-
   const headers = players.map((p,i) =>
     `<th class="th-player p${i}" onclick="openNameModal(${i})" title="Clica para editar">
       <span class="player-name">${escHtml(p)}</span><span class="edit-icon">✎</span>
-    </th>`
-  ).join('');
+    </th>`).join('');
 
   const rows = ALL_MAPS.map(mapName => {
     const splash = mapData[mapName.toLowerCase()] || '';
@@ -280,13 +377,11 @@ function renderTable() {
         </div>
       </td>`;
     }).join('');
-
     return `<tr class="map-row">
       <td class="td-map">
         ${splash ? `<img class="map-img" src="${splash}" alt="${mapName}" loading="lazy">` : ''}
         <div class="map-label">${mapName}</div>
-      </td>
-      ${cells}
+      </td>${cells}
     </tr>`;
   }).join('');
 
@@ -295,7 +390,6 @@ function renderTable() {
       <thead><tr><th class="th-map">Mapa</th>${headers}</tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
-
   renderLegend();
 }
 
@@ -304,21 +398,17 @@ function renderLegend() {
     `<div class="legend-item">
       <div class="legend-dot" style="background:${PLAYER_COLORS[i]}"></div>
       ${escHtml(p)}
-    </div>`
-  ).join('');
+    </div>`).join('');
 }
 
 // ── Agent modal ────────────────────────────────────────────────────
-function buildPickerGrid(filter = '') {
-  const filtered = filter
-    ? allAgents.filter(a => a.name.toLowerCase().includes(filter.toLowerCase()))
-    : allAgents;
+function buildPickerGrid(filter='') {
+  const filtered = filter ? allAgents.filter(a => a.name.toLowerCase().includes(filter.toLowerCase())) : allAgents;
   document.getElementById('pickerGrid').innerHTML = filtered.map(a =>
     `<div class="picker-agent" onclick="selectAgent('${escAttr(a.name)}')">
-      <img src="${a.portrait || a.icon}" alt="${escAttr(a.name)}" loading="lazy">
+      <img src="${a.portrait||a.icon}" alt="${escAttr(a.name)}" loading="lazy">
       <span>${a.name}</span>
-    </div>`
-  ).join('');
+    </div>`).join('');
 }
 
 function filterAgents(val) { buildPickerGrid(val); }
@@ -330,24 +420,17 @@ function openAgentModal(mapName, playerIdx) {
   buildPickerGrid();
   document.getElementById('agentModal').classList.add('open');
 }
-
-function closeAgentModal() {
-  document.getElementById('agentModal').classList.remove('open');
-  agentTarget = null;
-}
+function closeAgentModal() { document.getElementById('agentModal').classList.remove('open'); agentTarget=null; }
 
 function selectAgent(name) {
   if (!agentTarget) return;
   state[agentTarget.mapName][agentTarget.playerIdx] = name;
-  closeAgentModal();
-  renderTable();
+  closeAgentModal(); markUnsaved(); renderTable();
 }
-
 function clearAgent() {
   if (!agentTarget) return;
   state[agentTarget.mapName][agentTarget.playerIdx] = '';
-  closeAgentModal();
-  renderTable();
+  closeAgentModal(); markUnsaved(); renderTable();
 }
 
 // ── Name modal ─────────────────────────────────────────────────────
@@ -358,18 +441,12 @@ function openNameModal(idx) {
   document.getElementById('nameModal').classList.add('open');
   setTimeout(() => { input.focus(); input.select(); }, 80);
 }
-
-function closeNameModal() {
-  document.getElementById('nameModal').classList.remove('open');
-  nameTarget = null;
-}
-
+function closeNameModal() { document.getElementById('nameModal').classList.remove('open'); nameTarget=null; }
 function saveName() {
-  if (nameTarget === null) return;
+  if (nameTarget===null) return;
   const val = document.getElementById('nameInput').value.trim();
   if (val) players[nameTarget] = val;
-  closeNameModal();
-  renderTable();
+  closeNameModal(); markUnsaved(); renderTable();
 }
 
 // ── Reset ──────────────────────────────────────────────────────────
@@ -377,23 +454,23 @@ function confirmReset() {
   if (!confirm('Tens a certeza que queres apagar todas as comps?')) return;
   players = [...DEFAULT_PLAYERS];
   ALL_MAPS.forEach(m => { state[m] = DEFAULT_AGENTS[m] ? [...DEFAULT_AGENTS[m]] : ['','','','','']; });
-  // Clear URL param
-  const url = window.location.origin + window.location.pathname;
-  window.history.replaceState({}, '', url);
-  renderTable();
+  localStorage.removeItem(STORAGE_KEY);
+  window.history.replaceState({}, '', window.location.pathname);
+  unsaved = false; updateSaveBar(); renderTable();
 }
 
 // ── Helpers ────────────────────────────────────────────────────────
 function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function escAttr(s){ return s.replace(/'/g,"\\'"); }
 
-// Close modals on overlay click
-document.getElementById('agentModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeAgentModal(); });
-document.getElementById('nameModal').addEventListener('click',  e => { if(e.target===e.currentTarget) closeNameModal(); });
+// Close on overlay click
+['agentModal','nameModal','shareModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => { if(e.target===e.currentTarget) document.getElementById(id).classList.remove('open'); });
+});
 
 // ── Init ───────────────────────────────────────────────────────────
 (async () => {
-  loadFromURL(); // load from ?comp= param first
+  loadSaved();
   try {
     await fetchAll();
     buildPickerGrid();
