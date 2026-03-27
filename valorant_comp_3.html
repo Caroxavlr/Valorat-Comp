@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VALORANT · Team Comp</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red:#FF4655; --darker:#070D14; --panel:#13212E; --panel2:#162433;
+    --border:#1F3244; --text:#ECE8E1; --muted:#7B8FA3;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--darker);font-family:'Barlow Condensed',sans-serif;color:var(--text);min-height:100vh;padding:28px 20px 60px;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(-55deg,transparent,transparent 60px,rgba(255,70,85,0.02) 60px,rgba(255,70,85,0.02) 61px);pointer-events:none;z-index:0;}
+  .wrapper{position:relative;z-index:1;max-width:1160px;margin:0 auto;}
+
+  /* Header */
+  .header{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+  .header-bar{width:5px;height:52px;background:var(--red);box-shadow:0 0 16px var(--red);flex-shrink:0;}
+  .header-title{font-family:'Rajdhani',sans-serif;font-size:34px;font-weight:700;letter-spacing:4px;text-transform:uppercase;}
+  .header-title span{color:var(--red);}
+  .header-sub{font-size:12px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:3px;}
+
+  /* Toolbar */
+  .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+  .hint{font-size:12px;color:var(--muted);letter-spacing:1px;flex:1;min-width:200px;}
+  .hint span{color:var(--red);}
+  .btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;border:none;font-weight:600;}
+  .btn-share{background:var(--red);color:#fff;}
+  .btn-share:hover{background:#e03344;}
+  .btn-reset{background:transparent;border:1px solid var(--border);color:var(--muted);}
+  .btn-reset:hover{border-color:var(--red);color:var(--red);}
+
+  /* Share toast */
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a3a2a;border:1px solid #2ecc71;color:#2ecc71;padding:12px 24px;border-radius:6px;font-size:13px;letter-spacing:2px;text-transform:uppercase;z-index:999;transition:transform 0.3s ease;pointer-events:none;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+
+  /* Table */
+  .comp-table{width:100%;border-collapse:separate;border-spacing:0 5px;}
+  .comp-table thead tr th{padding:8px 4px 14px;font-family:'Rajdhani',sans-serif;font-size:15px;letter-spacing:2px;text-transform:uppercase;text-align:center;border-bottom:2px solid var(--border);}
+  .th-map{text-align:left;padding-left:14px;color:var(--muted);font-size:13px;}
+  .th-player{position:relative;cursor:pointer;user-select:none;}
+  .th-player:hover .player-name{opacity:0.75;}
+  .th-player::after{content:'';position:absolute;bottom:0;left:15%;right:15%;height:2px;}
+  .p0{color:#ccc;}.p0::after{background:#ccc;}
+  .p1{color:#4CAF50;}.p1::after{background:#4CAF50;}
+  .p2{color:#FFC107;}.p2::after{background:#FFC107;}
+  .p3{color:#FF4655;}.p3::after{background:#FF4655;}
+  .p4{color:#29B6F6;}.p4::after{background:#29B6F6;}
+  .player-name{display:inline-block;transition:opacity 0.15s;}
+  .edit-icon{font-size:10px;opacity:0.35;margin-left:3px;}
+  .th-player:hover .edit-icon{opacity:0.8;}
+
+  .map-row{background:var(--panel);border-radius:4px;transition:background 0.2s;}
+  .map-row:hover{background:var(--panel2);}
+  .map-row td{padding:5px;vertical-align:middle;}
+
+  .td-map{position:relative;width:150px;min-width:130px;height:90px;border-radius:4px 0 0 4px;overflow:hidden;padding:0!important;}
+  .map-img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(0.55) saturate(0.8);transition:filter 0.3s;}
+  .map-row:hover .map-img{filter:brightness(0.78) saturate(1.1);}
+  .map-label{position:absolute;inset:0;display:flex;align-items:flex-end;padding:7px 10px;font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,1);background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,transparent 65%);}
+
+  .td-agent{text-align:center;width:120px;}
+  .agent-card{display:inline-flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;}
+  .agent-img-wrap{width:66px;height:66px;border-radius:50%;overflow:hidden;border:2px solid var(--border);background:var(--darker);display:flex;align-items:center;justify-content:center;transition:border-color 0.25s,transform 0.2s;}
+  .agent-card:hover .agent-img-wrap{transform:scale(1.08);}
+  .agent-img-wrap.p0{border-color:rgba(200,200,200,0.35);}
+  .agent-img-wrap.p1{border-color:rgba(76,175,80,0.5);}
+  .agent-img-wrap.p2{border-color:rgba(255,193,7,0.5);}
+  .agent-img-wrap.p3{border-color:rgba(255,70,85,0.65);box-shadow:0 0 12px rgba(255,70,85,0.25);}
+  .agent-img-wrap.p4{border-color:rgba(41,182,246,0.5);}
+  .agent-img{width:100%;height:100%;object-fit:cover;object-position:top center;}
+  .agent-name{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+  .empty-slot .agent-img-wrap{background:rgba(255,255,255,0.02);border-style:dashed;}
+  .empty-slot .agent-img-wrap::after{content:'+';font-size:22px;color:var(--border);font-weight:300;}
+  .empty-slot .agent-name{color:#1e2e3e;}
+
+  /* Modals */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:100;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal-box{background:#0e1d28;border:1px solid var(--border);border-radius:8px;padding:20px;width:540px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.9);}
+  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  .modal-title{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--red);}
+  .modal-close{cursor:pointer;color:var(--muted);font-size:22px;line-height:1;}
+  .modal-close:hover{color:var(--text);}
+
+  .picker-search{width:100%;margin-bottom:12px;padding:8px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;border-radius:4px;outline:none;}
+  .picker-search::placeholder{color:var(--muted);}
+  .picker-search:focus{border-color:rgba(255,70,85,0.5);}
+  .picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px;max-height:340px;overflow-y:auto;}
+  .picker-agent{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:6px 4px;border-radius:6px;border:1px solid transparent;transition:border-color 0.15s,background 0.15s;}
+  .picker-agent:hover{border-color:var(--red);background:rgba(255,70,85,0.08);}
+  .picker-agent img{width:52px;height:52px;border-radius:50%;object-fit:cover;object-position:top;}
+  .picker-agent span{font-size:10px;letter-spacing:0.5px;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.2;}
+  .btn-clear{margin-top:12px;padding:8px 16px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:4px;width:100%;transition:border-color 0.2s,color 0.2s;}
+  .btn-clear:hover{border-color:var(--red);color:var(--red);}
+
+  .name-modal-box{background:#0e1d28;border:1px solid var(--border);border-radius:8px;padding:28px;width:360px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.9);}
+  .name-input{width:100%;margin:14px 0 18px;padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:18px;letter-spacing:2px;text-transform:uppercase;border-radius:4px;outline:none;}
+  .name-input:focus{border-color:var(--red);}
+  .btn-save{width:100%;padding:10px;background:var(--red);border:none;color:#fff;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:opacity 0.2s;}
+  .btn-save:hover{opacity:0.85;}
+
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);}
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:13px;letter-spacing:1px;text-transform:uppercase;}
+  .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+  .loading{text-align:center;padding:60px 0;font-size:18px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
+  .loading::after{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--red);margin-left:8px;animation:blink 1s infinite;vertical-align:middle;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.1}}
+
+  .picker-grid::-webkit-scrollbar{width:4px;}
+  .picker-grid::-webkit-scrollbar-track{background:transparent;}
+  .picker-grid::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <div class="header-bar"></div>
+    <div>
+      <div class="header-title">Team <span>Comp</span></div>
+      <div class="header-sub">Valorant · Composições por Mapa</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="hint">Clica num <span>agente</span> para escolher · Clica no <span>nome</span> do jogador para editar</div>
+    <button class="btn btn-share" onclick="shareComp()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Partilhar Link
+    </button>
+    <button class="btn btn-reset" onclick="confirmReset()">↺ Reset</button>
+  </div>
+
+  <div id="app"><div class="loading">A carregar agentes e mapas</div></div>
+  <div class="legend" id="legend"></div>
+</div>
+
+<div class="toast" id="toast">✓ Link copiado para a área de transferência</div>
+
+<!-- Agent picker -->
+<div class="modal-overlay" id="agentModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="agentModalTitle">Escolhe o agente</div>
+      <span class="modal-close" onclick="closeAgentModal()">✕</span>
+    </div>
+    <input class="picker-search" type="text" placeholder="Pesquisar agente..." oninput="filterAgents(this.value)" id="pickerSearch">
+    <div class="picker-grid" id="pickerGrid"></div>
+    <button class="btn-clear" onclick="clearAgent()">Limpar slot</button>
+  </div>
+</div>
+
+<!-- Player name editor -->
+<div class="modal-overlay" id="nameModal">
+  <div class="name-modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Editar jogador</div>
+      <span class="modal-close" onclick="closeNameModal()">✕</span>
+    </div>
+    <input class="name-input" type="text" id="nameInput" maxlength="20" placeholder="Nome do jogador"
+      onkeydown="if(event.key==='Enter') saveName()">
+    <button class="btn-save" onclick="saveName()">Guardar</button>
+  </div>
+</div>
+
+<script>
+// ── Constants ──────────────────────────────────────────────────────
+const PLAYER_COLORS = ['#ccc','#4CAF50','#FFC107','#FF4655','#29B6F6'];
+const ALL_MAPS = ['Abyss','Ascent','Bind','Breeze','Corrode','Fracture','Haven','Icebox','Lotus','Pearl','Split','Sunset'];
+
+// Default comp from screenshot
+const DEFAULT_AGENTS = {
+  Bind:     ['Skye',  'Raze',  'Brimstone', 'Waylay',  'Viper'],
+  Breeze:   ['Skye',  'Neon',  'Chamber',   'Waylay',  'Viper'],
+  Corrode:  ['',      '',      '',          '',        ''],
+  Fracture: ['Fade',  'Neon',  'Chamber',   'Phoenix', 'Brimstone'],
+  Haven:    ['Fade',  'Neon',  'Chamber',   'Phoenix', 'Omen'],
+  Icebox:   ['',      '',      '',          '',        ''],
+  Lotus:    ['Fade',  'Neon',  'Omen',      'Phoenix', 'Viper'],
+  Pearl:    ['Fade',  'Neon',  'Omen',      'Phoenix', 'Killjoy'],
+  Split:    ['Skye',  'Neon',  'Omen',      'Waylay',  'Viper'],
+};
+const DEFAULT_PLAYERS = ['???', 'Mendxzin', 'Tomazio99', 'Weben', 'Whiskas'];
+
+// ── State ──────────────────────────────────────────────────────────
+let players = [...DEFAULT_PLAYERS];
+let state   = {};
+ALL_MAPS.forEach(m => { state[m] = DEFAULT_AGENTS[m] ? [...DEFAULT_AGENTS[m]] : ['','','','','']; });
+
+let agentData   = {};
+let mapData     = {};
+let allAgents   = [];
+let agentTarget = null;
+let nameTarget  = null;
+
+// ── URL encode/decode ──────────────────────────────────────────────
+function encodeState() {
+  const obj = { p: players, s: state };
+  return btoa(encodeURIComponent(JSON.stringify(obj)));
+}
+
+function decodeState(str) {
+  try {
+    const obj = JSON.parse(decodeURIComponent(atob(str)));
+    if (obj.p && obj.s) {
+      players = obj.p;
+      ALL_MAPS.forEach(m => { state[m] = obj.s[m] || ['','','','','']; });
+    }
+  } catch(e) { /* invalid, use defaults */ }
+}
+
+function loadFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const data   = params.get('comp');
+  if (data) decodeState(data);
+}
+
+function shareComp() {
+  const encoded = encodeState();
+  const url = window.location.origin + window.location.pathname + '?comp=' + encoded;
+  navigator.clipboard.writeText(url).then(() => showToast()).catch(() => {
+    // fallback: prompt
+    prompt('Copia este link:', url);
+  });
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── Fetch ──────────────────────────────────────────────────────────
+async function fetchAll() {
+  const [ar, mr] = await Promise.all([
+    fetch('https://valorant-api.com/v1/agents?isPlayableCharacter=true'),
+    fetch('https://valorant-api.com/v1/maps')
+  ]);
+  const [aj, mj] = await Promise.all([ar.json(), mr.json()]);
+
+  allAgents = aj.data
+    .filter(a => a.isPlayableCharacter)
+    .sort((a,b) => a.displayName.localeCompare(b.displayName))
+    .map(a => ({ name: a.displayName, portrait: a.bustPortrait || a.displayIconSmall, icon: a.displayIconSmall }));
+
+  for (const a of allAgents) agentData[a.name.toLowerCase()] = { portrait: a.portrait, icon: a.icon };
+  for (const m of mj.data) if (m.splash) mapData[m.displayName.toLowerCase()] = m.splash;
+}
+
+function agentImg(name) {
+  if (!name) return null;
+  const d = agentData[name.toLowerCase()];
+  return d ? (d.portrait || d.icon) : null;
+}
+
+// ── Render ─────────────────────────────────────────────────────────
+function renderTable() {
+  const app = document.getElementById('app');
+
+  const headers = players.map((p,i) =>
+    `<th class="th-player p${i}" onclick="openNameModal(${i})" title="Clica para editar">
+      <span class="player-name">${escHtml(p)}</span><span class="edit-icon">✎</span>
+    </th>`
+  ).join('');
+
+  const rows = ALL_MAPS.map(mapName => {
+    const splash = mapData[mapName.toLowerCase()] || '';
+    const cells  = state[mapName].map((agName, pi) => {
+      const img   = agentImg(agName);
+      const empty = !agName;
+      return `<td class="td-agent">
+        <div class="agent-card${empty?' empty-slot':''}" onclick="openAgentModal('${mapName}',${pi})">
+          <div class="agent-img-wrap p${pi}">
+            ${img ? `<img class="agent-img" src="${img}" alt="${agName}" loading="lazy">` : ''}
+          </div>
+          <div class="agent-name">${agName || '—'}</div>
+        </div>
+      </td>`;
+    }).join('');
+
+    return `<tr class="map-row">
+      <td class="td-map">
+        ${splash ? `<img class="map-img" src="${splash}" alt="${mapName}" loading="lazy">` : ''}
+        <div class="map-label">${mapName}</div>
+      </td>
+      ${cells}
+    </tr>`;
+  }).join('');
+
+  app.innerHTML = `
+    <table class="comp-table">
+      <thead><tr><th class="th-map">Mapa</th>${headers}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+
+  renderLegend();
+}
+
+function renderLegend() {
+  document.getElementById('legend').innerHTML = players.map((p,i) =>
+    `<div class="legend-item">
+      <div class="legend-dot" style="background:${PLAYER_COLORS[i]}"></div>
+      ${escHtml(p)}
+    </div>`
+  ).join('');
+}
+
+// ── Agent modal ────────────────────────────────────────────────────
+function buildPickerGrid(filter = '') {
+  const filtered = filter
+    ? allAgents.filter(a => a.name.toLowerCase().includes(filter.toLowerCase()))
+    : allAgents;
+  document.getElementById('pickerGrid').innerHTML = filtered.map(a =>
+    `<div class="picker-agent" onclick="selectAgent('${escAttr(a.name)}')">
+      <img src="${a.portrait || a.icon}" alt="${escAttr(a.name)}" loading="lazy">
+      <span>${a.name}</span>
+    </div>`
+  ).join('');
+}
+
+function filterAgents(val) { buildPickerGrid(val); }
+
+function openAgentModal(mapName, playerIdx) {
+  agentTarget = { mapName, playerIdx };
+  document.getElementById('agentModalTitle').textContent = `${players[playerIdx]} · ${mapName}`;
+  document.getElementById('pickerSearch').value = '';
+  buildPickerGrid();
+  document.getElementById('agentModal').classList.add('open');
+}
+
+function closeAgentModal() {
+  document.getElementById('agentModal').classList.remove('open');
+  agentTarget = null;
+}
+
+function selectAgent(name) {
+  if (!agentTarget) return;
+  state[agentTarget.mapName][agentTarget.playerIdx] = name;
+  closeAgentModal();
+  renderTable();
+}
+
+function clearAgent() {
+  if (!agentTarget) return;
+  state[agentTarget.mapName][agentTarget.playerIdx] = '';
+  closeAgentModal();
+  renderTable();
+}
+
+// ── Name modal ─────────────────────────────────────────────────────
+function openNameModal(idx) {
+  nameTarget = idx;
+  const input = document.getElementById('nameInput');
+  input.value = players[idx];
+  document.getElementById('nameModal').classList.add('open');
+  setTimeout(() => { input.focus(); input.select(); }, 80);
+}
+
+function closeNameModal() {
+  document.getElementById('nameModal').classList.remove('open');
+  nameTarget = null;
+}
+
+function saveName() {
+  if (nameTarget === null) return;
+  const val = document.getElementById('nameInput').value.trim();
+  if (val) players[nameTarget] = val;
+  closeNameModal();
+  renderTable();
+}
+
+// ── Reset ──────────────────────────────────────────────────────────
+function confirmReset() {
+  if (!confirm('Tens a certeza que queres apagar todas as comps?')) return;
+  players = [...DEFAULT_PLAYERS];
+  ALL_MAPS.forEach(m => { state[m] = DEFAULT_AGENTS[m] ? [...DEFAULT_AGENTS[m]] : ['','','','','']; });
+  // Clear URL param
+  const url = window.location.origin + window.location.pathname;
+  window.history.replaceState({}, '', url);
+  renderTable();
+}
+
+// ── Helpers ────────────────────────────────────────────────────────
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escAttr(s){ return s.replace(/'/g,"\\'"); }
+
+// Close modals on overlay click
+document.getElementById('agentModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeAgentModal(); });
+document.getElementById('nameModal').addEventListener('click',  e => { if(e.target===e.currentTarget) closeNameModal(); });
+
+// ── Init ───────────────────────────────────────────────────────────
+(async () => {
+  loadFromURL(); // load from ?comp= param first
+  try {
+    await fetchAll();
+    buildPickerGrid();
+    renderTable();
+  } catch(e) {
+    document.getElementById('app').innerHTML =
+      `<div class="loading" style="color:#FF4655">Erro: ${e.message}</div>`;
+  }
+})();
+</script>
+</body>
+</html>
