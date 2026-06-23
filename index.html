@@ -398,13 +398,29 @@ function buildShareUrl() {
   const encoded = btoa(encodeURIComponent(JSON.stringify({ players, state, playbooks, rotation: [...rotationMaps] })));
   return SITE_BASE + '?comp=' + encoded;
 }
-function openShareModal() {
-  document.getElementById('shareUrlInput').value = buildShareUrl();
+async function openShareModal() {
+  const input = document.getElementById('shareUrlInput');
+  input.value = 'A encurtar link...';
+  input.style.color = 'var(--muted)';
   document.getElementById('shareModal').classList.add('open');
+  try {
+    const longUrl = buildShareUrl();
+    const res = await fetch('https://tinyurl.com/api-create.php?url=' + encodeURIComponent(longUrl));
+    if (res.ok) {
+      const short = await res.text();
+      input.value = short.trim();
+    } else {
+      input.value = buildShareUrl();
+    }
+  } catch(e) {
+    input.value = buildShareUrl();
+  }
+  input.style.color = '';
 }
 function closeShareModal() { document.getElementById('shareModal').classList.remove('open'); }
 function copyShareUrl() {
   const url = document.getElementById('shareUrlInput').value;
+  if (url === 'A encurtar link...') return;
   navigator.clipboard.writeText(url)
     .then(() => { closeShareModal(); showToast('toastCopied'); })
     .catch(() => { document.getElementById('shareUrlInput').select(); document.execCommand('copy'); closeShareModal(); showToast('toastCopied'); });
