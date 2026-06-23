@@ -361,9 +361,17 @@ function loadSaved() {
   const urlData = params.get('comp');
   if (urlData) {
     try {
-      const decompressed = LZString.decompressFromEncodedURIComponent(urlData);
-      const obj = JSON.parse(decompressed || decodeURIComponent(atob(urlData)));
-      if (obj.players && obj.state) {
+      let obj = null;
+      // Try LZString first (new format)
+      try {
+        const decompressed = LZString.decompressFromEncodedURIComponent(urlData);
+        if (decompressed) obj = JSON.parse(decompressed);
+      } catch(e) {}
+      // Fallback to old base64 format
+      if (!obj) {
+        try { obj = JSON.parse(decodeURIComponent(atob(urlData))); } catch(e) {}
+      }
+      if (obj && obj.players && obj.state) {
         players   = obj.players;
         playbooks = obj.playbooks || {};
         if (obj.rotation) rotationMaps = new Set(obj.rotation);
