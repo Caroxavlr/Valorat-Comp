@@ -405,7 +405,7 @@ async function openShareModal() {
   document.getElementById('shareModal').classList.add('open');
   try {
     const longUrl = buildShareUrl();
-    const res = await fetch('https://tinyurl.com/api-create.php?url=' + encodeURIComponent(longUrl));
+    const res = await fetch('https://is.gd/create.php?format=simple&url=' + encodeURIComponent(longUrl));
     if (res.ok) {
       const short = await res.text();
       input.value = short.trim();
