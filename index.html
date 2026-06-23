@@ -366,6 +366,7 @@ function loadSaved() {
       if (obj.players && obj.state) {
         players   = obj.players;
         playbooks = obj.playbooks || {};
+        if (obj.rotation) rotationMaps = new Set(obj.rotation);
         ALL_MAPS.forEach(m => { state[m] = obj.state[m] || ['','','','','']; });
         unsaved = false; updateSaveBar(); return;
       }
